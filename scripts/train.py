@@ -27,6 +27,7 @@ def add_tag_suffix(summary, tag_suffix):
 
 
 def main():
+    import pdb; pdb.set_trace()
     parser = argparse.ArgumentParser()
     parser.add_argument("--input_dir", type=str, required=True, help="either a directory containing subdirectories "
                                                                      "train, val, test, etc, or a directory containing "
