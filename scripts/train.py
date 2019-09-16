@@ -27,7 +27,6 @@ def add_tag_suffix(summary, tag_suffix):
 
 
 def main():
-    import pdb; pdb.set_trace()
     parser = argparse.ArgumentParser()
     parser.add_argument("--input_dir", type=str, required=True, help="either a directory containing subdirectories "
                                                                      "train, val, test, etc, or a directory containing "
@@ -122,7 +121,7 @@ def main():
     for k, v in args._get_kwargs():
         print(k, "=", v)
     print('------------------------------------- End --------------------------------------')
-
+    
     VideoDataset = datasets.get_dataset_class(args.dataset)
     train_dataset = VideoDataset(
         args.input_dir,
@@ -170,6 +169,7 @@ def main():
     iterator = tf.data.Iterator.from_string_handle(
         train_handle, train_tf_dataset.output_types, train_tf_dataset.output_shapes)
     inputs = iterator.get_next()
+    import pdb;pdb.set_trace()
 
     # inputs comes from the training dataset by default, unless train_handle is remapped to the val_handles
     model.build_graph(inputs)
