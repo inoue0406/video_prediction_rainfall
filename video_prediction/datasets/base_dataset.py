@@ -272,7 +272,9 @@ class VideoDataset(BaseVideoDataset):
             feature = feature[name]
             list_type, = feature.keys()
             if list_type == 'floatList':
-                inferred_shape = (len(feature[list_type]['value']),)
+                spatial_size = (len(feature[list_type]['value']),)
+                height = width = int(np.sqrt(spatial_size)) # assume square image
+                inferred_shape = (height, width, 1)
                 if shape is None:
                     name_and_shape[1] = inferred_shape
                 else:
@@ -319,7 +321,9 @@ class VideoDataset(BaseVideoDataset):
         for i in range(self._max_sequence_length):
             for example_name, (name, shape) in self.state_like_names_and_shapes.items():
                 if example_name == 'images':  # special handling for image
-                    features[name % i] = tf.FixedLenFeature([1], tf.string)
+                    #features[name % i] = tf.FixedLenFeature([1], tf.string)
+                    # * tmp for rainfall data
+                    features[name % i] = tf.FixedLenFeature(shape, tf.float32)
                 else:
                     features[name % i] = tf.FixedLenFeature(shape, tf.float32)
         for i in range(self._max_sequence_length - 1):
@@ -345,13 +349,14 @@ class VideoDataset(BaseVideoDataset):
                 action_like_seqs[example_name].append(features[name % i])
 
         # for this class, it's much faster to decode and preprocess the entire sequence before sampling a slice
-        _, image_shape = self.state_like_names_and_shapes['images']
-        state_like_seqs['images'] = self.decode_and_preprocess_images(state_like_seqs['images'], image_shape)
+        # * tmp comment out for rainfall data
+        #_, image_shape = self.state_like_names_and_shapes['images']
+        #state_like_seqs['images'] = self.decode_and_preprocess_images(state_like_seqs['images'], image_shape)
 
         state_like_seqs, action_like_seqs = \
             self.slice_sequences(state_like_seqs, action_like_seqs, self._max_sequence_length)
         return state_like_seqs, action_like_seqs
-
+    
 
 class SequenceExampleVideoDataset(BaseVideoDataset):
     """

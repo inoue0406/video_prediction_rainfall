@@ -71,6 +71,7 @@ def convert_tfrecords(image_dir, sample_csv, out_path):
                 img_bytes = img.tostring()
                 step_str = "step" + str(i)
                 data[step_str] = wrap_bytes(img_bytes)
+                #data[step_str] = img_bytes
 
             # Wrap the data as TensorFlow Features.
             feature = tf.train.Features(feature=data)
@@ -87,12 +88,12 @@ def convert_tfrecords(image_dir, sample_csv, out_path):
 if __name__ == '__main__':
 
     # for training data
-#    image_dir = "../data/jma/data_kanto_resize"
-#    train_sample_csv = "../data/jma/train_simple_JMARadar.csv"
-#    path_tfrecords_train = "../data/jma/train/train_simple.tfrecords"
-#    convert_tfrecords(image_dir=image_dir,
-#                      sample_csv=train_sample_csv,
-#                      out_path=path_tfrecords_train)
+    image_dir = "../data/jma/data_kanto_resize"
+    train_sample_csv = "../data/jma/train_simple_JMARadar.csv"
+    path_tfrecords_train = "../data/jma/train/train_simple.tfrecords"
+    convert_tfrecords(image_dir=image_dir,
+                      sample_csv=train_sample_csv,
+                      out_path=path_tfrecords_train)
     
     # for validation data
     image_dir = "../data/jma/data_kanto_resize"
