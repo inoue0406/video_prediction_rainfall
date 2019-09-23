@@ -169,7 +169,6 @@ def main():
     iterator = tf.data.Iterator.from_string_handle(
         train_handle, train_tf_dataset.output_types, train_tf_dataset.output_shapes)
     inputs = iterator.get_next()
-    import pdb;pdb.set_trace()
 
     # inputs comes from the training dataset by default, unless train_handle is remapped to the val_handles
     model.build_graph(inputs)
