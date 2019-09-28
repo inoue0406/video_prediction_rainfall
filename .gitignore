@@ -3,7 +3,6 @@
 test/
 data*/
 logs*/
-hparams*/
 pretrained_models/
 results*/
 run/log*
