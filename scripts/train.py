@@ -14,7 +14,6 @@ import tensorflow as tf
 
 from video_prediction import datasets, models
 
-
 def add_tag_suffix(summary, tag_suffix):
     summary_proto = tf.Summary()
     summary_proto.ParseFromString(summary)
@@ -211,7 +210,8 @@ def main():
             args.eval_summary_freq != 0 or args.accum_eval_summary_freq != 0):
         summary_writer = tf.summary.FileWriter(args.output_dir)
 
-    gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=args.gpu_mem_frac)
+    gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=args.gpu_mem_frac,
+                                allow_growth=True)
     config = tf.ConfigProto(gpu_options=gpu_options, allow_soft_placement=True)
     global_step = tf.train.get_or_create_global_step()
     max_steps = model.hparams.max_steps
