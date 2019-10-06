@@ -476,6 +476,7 @@ class VideoPredictionModel(BaseVideoPredictionModel):
 
         if self.num_gpus <= 1:  # cpu or 1 gpu
             outputs_tuple, losses_tuple, loss_tuple, metrics_tuple = self.tower_fn(self.inputs)
+            #import pdb; pdb.set_trace()
             self.outputs, self.eval_outputs = outputs_tuple
             self.d_losses, self.g_losses, g_losses_post = losses_tuple
             self.d_loss, self.g_loss, g_loss_post = loss_tuple

@@ -4,6 +4,7 @@
 # https://github.com/Hvass-Labs/TensorFlow-Tutorials/blob/master/18_TFRecords_Dataset_API.ipynb
 
 import os
+import sys
 
 import numpy as np
 import tensorflow as tf
@@ -30,12 +31,19 @@ def f_scaling_float(X):
     Xscl = np.power(X/201.0,0.5)*255
     return Xscl
 
+def f_scaling_float_one(X):
+    # convert to [0-1] scale
+    # sqrt conversion
+    Xscl = np.power(X/201.0,0.5)
+    return Xscl
+
 def convert_tfrecords(image_dir, sample_csv, out_path):
     """
     Convert h5 file into tfrecords
     image_dir : image directory
     sample_csv : csv file with data file path
     """
+    record_len = 1000
 
     df_fnames = pd.read_csv(sample_csv)
     #print(list)
@@ -43,10 +51,11 @@ def convert_tfrecords(image_dir, sample_csv, out_path):
     for i in range(len(df_fnames)):
 
         # Open a TFRecordWriter for the output-file.
-        if (i % 1000) == 0:
+        if (i % record_len) == 0:
             if i != 0:
                 writer.close()
-            out_path_num = out_path.replace("XXX","%05d" % i)
+            inxt = min(i+record_len-1,len(df_fnames)-1)
+            out_path_num = out_path.replace("XXX","%05d-%05d" % (i,inxt))
             print("Converting: " + out_path_num)
             writer = tf.python_io.TFRecordWriter(out_path_num) 
         
@@ -56,7 +65,7 @@ def convert_tfrecords(image_dir, sample_csv, out_path):
         h5file = h5py.File(h5_name_X,'r')
         X = h5file['R'][()]
         X = np.maximum(X,0) # replace negative value with 0
-        X = f_scaling_float(X)   # scale range to [0-255]
+        X = f_scaling_float_one(X)   # scale range to [0-255]
         X = X[:,:,:,None] # add "channel" dimension as 1 (channel-last format)
         h5file.close()
         # read Future data
@@ -65,7 +74,7 @@ def convert_tfrecords(image_dir, sample_csv, out_path):
         h5file = h5py.File(h5_name_Y,'r')
         Y = h5file['R'][()]
         Y = np.maximum(Y,0) # replace negative value with 0
-        Y = f_scaling_float(Y)    # scale range to [0-255]
+        Y = f_scaling_float_one(Y)    # scale range to [0-255]
         Y = Y[:,:,:,None]   # add "channel" dimension as 1 (channel-last format)
         # save
         XY = np.concatenate([X,Y],axis=0)
@@ -98,11 +107,19 @@ if __name__ == '__main__':
 
     # for training data
     image_dir = "../data/jma/data_kanto_resize"
-    train_sample_csv = "../data/jma/train_simple_JMARadar.csv"
-    path_tfrecords_train = "../data/jma/train/train_simple_XXX.tfrecords"
+    train_sample_csv = "../data/jma/train_kanto_flatsampled_JMARadar.csv"
+    path_tfrecords_train = "../data/jma_flat/train/train_simple_XXX.tfrecords"
     convert_tfrecords(image_dir=image_dir,
                       sample_csv=train_sample_csv,
                       out_path=path_tfrecords_train)
+
+#    # for training data
+#    image_dir = "../data/jma/data_kanto_resize"
+#    train_sample_csv = "../data/jma/train_simple_JMARadar.csv"
+#    path_tfrecords_train = "../data/jma/train/train_simple_XXX.tfrecords"
+#    convert_tfrecords(image_dir=image_dir,
+#                      sample_csv=train_sample_csv,
+#                      out_path=path_tfrecords_train)
     
     # for validation data
     image_dir = "../data/jma/data_kanto_resize"
